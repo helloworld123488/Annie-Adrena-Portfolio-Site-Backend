@@ -75,8 +75,10 @@ app.post("/contact", async (req, res) => {
 
 // IMPORTANT: this must actually start the server on your host's assigned port
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
