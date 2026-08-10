@@ -8,24 +8,27 @@ const nodemailer = require("nodemailer");
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  "https://annie-adrena-portfolio-site-fronten.vercel.app/contact", // deployed frontend
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://annie-adrena-portfolio-site-fronten.vercel.app",
+  "https://annie-adrena-portfolio-site-frontend.vercel.app",
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow tools like curl/postman with no origin
+    // allow tools like curl/postman with no origin header
     if (!origin) return callback(null, true);
 
     const isAllowed =
       allowedOrigins.includes(origin) ||
-      /^https:\/\/annie-adrena-portfolio.*\.vercel\.app$/.test(origin);
+      /^https:\/\/annie-adrena-portfolio.*\.vercel\.app$/.test(origin) ||
+      /\.vercel\.app$/.test(origin);
 
     if (isAllowed) return callback(null, true);
-    return callback(new Error("Not allowed by CORS: " + origin));
+    return callback(null, false);
   },
   methods: ["POST", "GET", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 204,
   preflightContinue: false,
 };
@@ -40,14 +43,16 @@ app.get("/", (req, res) => {
 });
 
 app.post("/contact", async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message } = req.body || {};
 
   if (!name || !email || !message) {
     return res.status(400).json({ success: false, error: "Missing fields" });
   }
 
-  // temporary debug log — remove once working
-  console.log("APP_PASSWORD loaded:", !!process.env.APP_PASSWORD);
+  if (!process.env.APP_PASSWORD) {
+    console.error("APP_PASSWORD environment variable is missing.");
+    return res.status(500).json({ success: false, error: "Server email configuration missing" });
+  }
 
   try {
     const transporter = nodemailer.createTransport({
@@ -81,4 +86,4 @@ if (!process.env.VERCEL) {
   });
 }
 
-module.exports = app;
+module.exports = app;
