@@ -9,7 +9,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://annie-adrena-portfolio-site-fronten.vercel.app", // deployed frontend
+  "https://annie-adrena-portfolio-site-fronten.vercel.app/contact", // deployed frontend
 ];
 
 const corsOptions = {
