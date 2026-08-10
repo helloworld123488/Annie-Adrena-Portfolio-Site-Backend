@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+const PORT=process.env.PORT
 
 // POST route for contact form
 app.post("/contact", async (req, res) => {
